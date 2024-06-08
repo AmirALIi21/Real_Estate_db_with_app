@@ -5,9 +5,9 @@ from psycopg2 import sql
 def connect_db():
     return psycopg2.connect(
         host='localhost',
-        dbname='real_estate_v01',
+        dbname='your_db_name',
         user='postgres',
-        password='13801380',
+        password='your_pass',
         port=5432
     )
 
