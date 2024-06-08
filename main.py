@@ -4,9 +4,9 @@ import psycopg2
 
 DB_PARAMS = {
     'host': 'localhost',
-    'dbname': 'real_estate_v01',
+    'dbname': 'your_db_name',
     'user': 'postgres',
-    'password': '13801380',
+    'password': 'pass',
     'port': 5432
 }
 
