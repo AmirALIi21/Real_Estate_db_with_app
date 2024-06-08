@@ -1,0 +1,9 @@
+INSERT INTO estate_sell_type (id, rent, sale, mortgage) VALUES (1, 'renting', NULL, NULL);
+INSERT INTO estate_sell_type (id, rent, sale, mortgage) VALUES (2, NULL, 'sale', NULL);
+INSERT INTO estate_sell_type (id, rent, sale, mortgage) VALUES (3, NULL, NULL, 'mortgage');
+INSERT INTO estate_sell_type (id, rent, sale, mortgage) VALUES (4, 'renting', 'sale', NULL);
+INSERT INTO estate_sell_type (id, rent, sale, mortgage) VALUES (5, 'renting', NULL, 'mortgage');
+INSERT INTO estate_sell_type (id, rent, sale, mortgage) VALUES (6, NULL, 'sale', 'mortgage');
+INSERT INTO estate_type (id, villa, apartment, garden_house) VALUES (1, 'villa', NULL, NULL);
+INSERT INTO estate_type (id, villa, apartment, garden_house) VALUES (2, NULL, 'apartment', NULL);
+INSERT INTO estate_type (id, villa, apartment, garden_house) VALUES (3, NULL, NULL, 'garden_house');
