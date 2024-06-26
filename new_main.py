@@ -4,9 +4,9 @@ import psycopg2
 
 DB_PARAMS = {
     'host': 'localhost',
-    'dbname': 'your_db_name',
+    'dbname': 'real_estate_v01',
     'user': 'postgres',
-    'password': 'pass',
+    'password': '13801380',
     'port': 5432
 }
 
@@ -14,6 +14,226 @@ def connect_db():
     conn = psycopg2.connect(**DB_PARAMS)
     cur = conn.cursor()
     return conn
+
+def update_customer():
+    def get_customer_data(national_id):
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM customer WHERE national_id = %s", (national_id,))
+        customer = cur.fetchone()
+        cur.close()
+        conn.close()
+        return customer
+
+    def update_customer_fields(national_id):
+        customer = get_customer_data(national_id)
+        if customer:
+            tk.Label(new_window, text="Name:").grid(row=2, column=0)
+            entry_name = tk.Entry(new_window, insertwidth=100)
+            entry_name.insert(0, customer[1])
+            entry_name.grid(row=2, column=1)
+
+            tk.Label(new_window, text="Email:").grid(row=3, column=0)
+            entry_email = tk.Entry(new_window, insertwidth=100)
+            entry_email.insert(0, customer[2])
+            entry_email.grid(row=3, column=1)
+
+            tk.Label(new_window, text="Location:").grid(row=4, column=0)
+            entry_location = tk.Entry(new_window, insertwidth=100)
+            entry_location.insert(0, customer[3])
+            entry_location.grid(row=4, column=1)
+
+            tk.Label(new_window, text="Phone Number:").grid(row=5, column=0)
+            entry_phone_number = tk.Entry(new_window, insertwidth=100)
+            entry_phone_number.insert(0, customer[4])
+            entry_phone_number.grid(row=5, column=1)
+
+       
+            tk.Label(new_window, text="Is Seller:").grid(row=6, column=0)
+            check_is_seller = tk.BooleanVar()
+            check_is_seller.set(customer[5])  
+            tk.Checkbutton(new_window, text="Yes", variable=check_is_seller, command=lambda: update_seller_info(check_is_seller.get())).grid(row=6, column=1)
+
+            tk.Label(new_window, text="Seller Type:").grid(row=7, column=0)
+            seller_type_var = tk.StringVar()
+            seller_type_menu = tk.OptionMenu(new_window, seller_type_var, "Company", "Person", "Shop")
+            seller_type_menu.grid(row=7, column=1)
+
+           
+            if customer[5]:
+                seller_type_var.set(get_customer_data(national_id)[6])
+                update_seller_info(True) 
+
+            tk.Label(new_window, text="Company Name:").grid(row=8, column=0)
+            entry_company_name = tk.Entry(new_window, insertwidth=100)
+            if customer[5] and get_customer_data(national_id)[6] == "Company":
+                entry_company_name.insert(0, get_customer_data(national_id)[7])
+            entry_company_name.grid(row=8, column=1)
+
+            tk.Label(new_window, text="Person Name:").grid(row=9, column=0)
+            entry_person_name = tk.Entry(new_window, insertwidth=100)
+            if customer[5] and get_customer_data(national_id)[6] == "Person":
+                entry_person_name.insert(0, get_customer_data(national_id)[8])
+            entry_person_name.grid(row=9, column=1)
+
+            tk.Label(new_window, text="Shop Name:").grid(row=10, column=0)
+            entry_shop_name = tk.Entry(new_window, insertwidth=100)
+            if customer[5] and get_customer_data(national_id)[6] == "Shop":
+                entry_shop_name.insert(0, get_customer_data(national_id)[9])
+            entry_shop_name.grid(row=10, column=1)
+
+            def submit_update_customer():
+        
+                national_id = entry_national_id.get()
+                name = entry_name.get()
+                email = entry_email.get()
+                location = entry_location.get()
+                phone_number = entry_phone_number.get()
+                is_seller = check_is_seller.get()
+
+                conn = connect_db()
+                cur = conn.cursor()
+                cur.execute("""
+                UPDATE customer
+                SET name = %s, email = %s, location = %s, phone_number = %s, is_seller = %s
+                WHERE national_id = %s
+                    """, (name, email, location, phone_number, is_seller, national_id))
+                conn.commit()
+                cur.close()
+                conn.close()
+                messagebox.showinfo("Success", "Customer information updated successfully.")
+
+            def update_seller_info(is_seller):
+                if is_seller:
+                    seller_type_menu.grid()
+                    entry_company_name.grid()
+                    entry_person_name.grid()
+                    entry_shop_name.grid()
+                else:
+                    seller_type_menu.grid_remove()
+                    entry_company_name.grid_remove()
+                    entry_person_name.grid_remove()
+                    entry_shop_name.grid_remove()
+            tk.Button(new_window, text="Submit Update", command=submit_update_customer).grid(row=11, columnspan=2)
+        else:
+            messagebox.showerror("Error", "Customer not found.")
+
+   
+
+
+
+    new_window = tk.Toplevel(root)
+    new_window.title("Update Customer")
+
+    # Search for customer by national ID
+    tk.Label(new_window, text="National ID:").grid(row=0, column=0)
+    entry_national_id = tk.Entry(new_window)
+    entry_national_id.grid(row=0, column=1)
+
+    tk.Button(new_window, text="Search Customer", command=lambda: update_customer_fields(entry_national_id.get())).grid(row=1, columnspan=2)
+
+
+def update_estate():
+    def get_estate_data(estate_id):
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM estate WHERE estate_id = %s", (estate_id,))
+        estate = cur.fetchone()
+        cur.close()
+        conn.close()
+        return estate
+
+    def update_estate_fields(estate_id):
+        estate = get_estate_data(estate_id)
+        if estate:
+            tk.Label(new_window, text="Title:").grid(row=2, column=0)
+            entry_title = tk.Entry(new_window, insertwidth=100)
+            entry_title.insert(0, estate[1])
+            entry_title.grid(row=2, column=1)
+
+            tk.Label(new_window, text="Description:").grid(row=3, column=0)
+            entry_description = tk.Entry(new_window, insertwidth=100)
+            entry_description.insert(0, estate[2])
+            entry_description.grid(row=3, column=1)
+
+            tk.Label(new_window, text="Location:").grid(row=4, column=0)
+            entry_location = tk.Entry(new_window, insertwidth=100)
+            entry_location.insert(0, estate[3])
+            entry_location.grid(row=4, column=1)
+
+            tk.Label(new_window, text="Meterage:").grid(row=5, column=0)
+            entry_meterage = tk.Entry(new_window, insertwidth=100)
+            entry_meterage.insert(0, estate[4])
+            entry_meterage.grid(row=5, column=1)
+
+            tk.Label(new_window, text="Number of Rooms:").grid(row=6, column=0)
+            entry_n_rooms = tk.Entry(new_window, insertwidth=100)
+            entry_n_rooms.insert(0, estate[5])
+            entry_n_rooms.grid(row=6, column=1)
+
+            tk.Label(new_window, text="Price:").grid(row=7, column=0)
+            entry_price = tk.Entry(new_window, insertwidth=100)
+            entry_price.insert(0, estate[6])
+            entry_price.grid(row=7, column=1)
+
+            tk.Label(new_window, text="Build Date:").grid(row=8, column=0)
+            entry_build_date = tk.Entry(new_window, insertwidth=100)
+            entry_build_date.insert(0, estate[7])
+            entry_build_date.grid(row=8, column=1)
+
+            tk.Label(new_window, text="Sell Type:").grid(row=9, column=0)
+            entry_sell_type = tk.Entry(new_window, insertwidth=100)
+            entry_sell_type.insert(0, estate[8])
+            entry_sell_type.grid(row=9, column=1)
+
+            tk.Label(new_window, text="Estate Type:").grid(row=10, column=0)
+            entry_estate_type = tk.Entry(new_window, insertwidth=100)
+            entry_estate_type.insert(0, estate[9])
+            entry_estate_type.grid(row=10, column=1)
+
+            tk.Label(new_window, text="Has Parking:").grid(row=11, column=0)
+            var_has_parking = tk.BooleanVar()
+            var_has_parking.set(estate[11])
+            tk.Checkbutton(new_window, text="Yes", variable=var_has_parking).grid(row=11, column=1)
+
+            def submit_update_estate():
+                title = entry_title.get()
+                description = entry_description.get()
+                location = entry_location.get()
+                meterage = entry_meterage.get()
+                n_rooms = entry_n_rooms.get()
+                price = entry_price.get()
+                build_date = entry_build_date.get()
+                sell_type = entry_sell_type.get()
+                estate_type = entry_estate_type.get()
+                has_parking = var_has_parking.get()
+
+                conn = connect_db()
+                cur = conn.cursor()
+                cur.execute("""
+                    UPDATE estate
+                    SET title = %s, description = %s, location = %s, meterage = %s, n_rooms = %s, 
+                        price = %s, build_date = %s, sell_type = %s, estate_type = %s, has_parking = %s
+                    WHERE estate_id = %s
+                """, (title, description, location, meterage, n_rooms, price, build_date, sell_type, estate_type, has_parking, estate_id))
+                conn.commit()
+                cur.close()
+                conn.close()
+                messagebox.showinfo("Success", "Estate information updated successfully.")
+
+            tk.Button(new_window, text="Submit Update", command=submit_update_estate).grid(row=12, columnspan=2)
+        else:
+            messagebox.showerror("Error", "Estate not found.")
+
+    new_window = tk.Toplevel(root)
+    new_window.title("Update Estate")
+
+    tk.Label(new_window, text="Estate ID:").grid(row=0, column=0)
+    entry_estate_id = tk.Entry(new_window)
+    entry_estate_id.grid(row=0, column=1)
+
+    tk.Button(new_window, text="Fetch Estate", command=lambda: update_estate_fields(entry_estate_id.get())).grid(row=1, columnspan=2)
+
 
 def insert_customer():
     def toggle_seller_fields():
@@ -346,7 +566,6 @@ def search_estates():
         cur = conn.cursor()
         cur.execute(query, tuple(params))
         estates = cur.fetchall()
-
         for estate in estates:
             print(estate)
 
@@ -396,7 +615,6 @@ def search_customers():
         if email:
             query += " AND email = %s"
             params.append(email)
-
         conn = connect_db()
         cur = conn.cursor()
         cur.execute(query, tuple(params))
@@ -444,6 +662,41 @@ def search_customers():
 
     tk.Button(new_window, text="Search", command=submit_search_customers).grid(row=4, columnspan=2)
 
+def show_customers():
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM customer")
+    customers = cur.fetchall()
+    cur.close()
+    conn.close()
+    
+    new_window = tk.Toplevel(root)
+    new_window.title("All Customers")
+
+    for index, customer in enumerate(customers):
+        tk.Label(new_window, text=f"ID: {customer[0]}, Name: {customer[1]}, Email: {customer[2]}, Location: {customer[3]}, Phone: {customer[4]}, Is Seller: {customer[5]}").grid(row=index, column=0)
+
+def show_estates():
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM estate")
+    estates = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    new_window = tk.Toplevel(root)
+    new_window.title("All Estates")
+
+    for index, estate in enumerate(estates):
+        tk.Label(new_window, text=f"ID: {estate[0]}, Title: {estate[1]}, Description: {estate[2]}, Location: {estate[3]}, Meterage: {estate[4]}, Rooms: {estate[5]}, Price: {estate[6]}, Build Date: {estate[7]}, Sell Type: {estate[8]}, Estate Type: {estate[9]}, Seller ID: {estate[10]}, Parking: {estate[11]}").grid(row=index, column=0)
+
+def show_page():
+    new_window = tk.Toplevel(root)
+    new_window.title("show options")
+
+    tk.Button(new_window, text="show customers", command=show_customers).grid(row=0, column=0)
+    tk.Button(new_window, text="show estates", command=show_estates).grid(row=1, column=0)
+
 def insert_page():
     new_window = tk.Toplevel(root)
     new_window.title("Insert Options")
@@ -457,6 +710,12 @@ def delete_page():
 
     tk.Button(new_window, text="Delete from Customers", command=delete_customer).grid(row=0, column=0)
     tk.Button(new_window, text="Delete from Estates", command=delete_estate).grid(row=1, column=0)
+
+def update_page():
+    new_window = tk.Toplevel(root)
+    new_window.title("Update Options")
+    tk.Button(new_window, text="Update Customer", command=update_customer).grid(row=0, column=0)
+    tk.Button(new_window, text="Update Estate", command=update_estate).grid(row=1, column=0)
 
 def search_page():
     new_window = tk.Toplevel(root)
@@ -472,6 +731,8 @@ tk.Button(root, text="Associate Seller with Estate", command=associate).pack(pad
 tk.Button(root, text="Inserting", command=insert_page).pack(pady=5)
 tk.Button(root, text="Deleting", command=delete_page).pack(pady=5)
 tk.Button(root, text="Search", command=search_page).pack(pady=5)
+tk.Button(root, text="Update", command=update_page).pack(pady=5)
+tk.Button(root, text="show", command=show_page).pack(pady=5)
 
 root.mainloop()
 

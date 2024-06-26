@@ -68,6 +68,16 @@ cur.execute("""
 """)
 
 cur.execute("""
+  CREATE TABLE Buy (
+    national_id INT,
+    estate_id INT,
+    PRIMARY KEY (national_id , estate_id),
+    FOREIGN KEY (national_id) REFERENCES customer(national_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (estate_id) REFERENCES Estate(estate_id) ON DELETE CASCADE ON UPDATE CASCADE
+  );
+""")
+
+cur.execute("""
   CREATE TABLE has (
     seller_id INT,
     estate_id INT,
